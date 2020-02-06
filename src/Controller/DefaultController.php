@@ -17,8 +17,8 @@ class DefaultController extends AbstractController
         
             $name = "Admin";
             $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('send@example.com')
-            ->setTo('recipient@example.com')
+            ->setFrom('gratien.therond@gmail.com')
+            ->setTo('gratien.therond@gmail.com')
             ->setBody(
                 $this->renderView(
                     // templates/emails/updateDiscount.html.twig
