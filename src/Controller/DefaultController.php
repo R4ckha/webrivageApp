@@ -10,13 +10,13 @@ use Symfony\Component\Mailer\Mailer;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/default", name="default")
+     * @Route("/", name="home")
      */
-    public function index()
+    public function index(\Swift_Mailer $mailer)
     {   
         
             $name = "Admin";
-            $message = (new \Swift_Message('Hello Email'))
+            /*$message = (new \Swift_Message('Hello Email'))
             ->setFrom('gratien.therond@gmail.com')
             ->setTo('gratien.therond@gmail.com')
             ->setBody(
@@ -29,7 +29,7 @@ class DefaultController extends AbstractController
             );
 
         $mailer->send($message);
-
+        */
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);

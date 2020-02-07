@@ -14,7 +14,7 @@ class ProductsType extends AbstractType
         $builder
             ->add('name')
             ->add('price')
-            ->add('discounted_price')
+            //->add('discounted_price', null, ["mapped"=>false])
             ->add('type')
         ;
     }
