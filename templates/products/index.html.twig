@@ -23,8 +23,14 @@
             {% for product in products %}
             <tr class="table-active">
                 <th scope="row">{{ product.name }}</th>
-                <td>{{ product.price }} €</td>
-                <td>{{ product.discountedprice }} €</td>
+                <td>{{ product.price|number_format(2, '.', ',') }} €</td>
+                <td>
+                    {% if product.discountedprice %}
+                        {{ product.discountedprice|number_format(2, '.', ',') }} €
+                    {% else %}
+                        Waiting calcul
+                    {% endif %}
+                </td>
                 <td>{{ product.type }}</td>
             </tr>
             {% endfor %}

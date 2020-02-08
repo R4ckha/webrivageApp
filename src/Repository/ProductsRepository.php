@@ -19,6 +19,23 @@ class ProductsRepository extends ServiceEntityRepository
         parent::__construct($registry, Products::class);
     }
 
+    /**
+     * @return Product[]
+     */
+    public function findAllType(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT type FROM products p
+            GROUP BY p.type
+            ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+        // returns an array of Product objects
+        return $stmt->fetchAll();
+    }
     // /**
     //  * @return Products[] Returns an array of Products objects
     //  */

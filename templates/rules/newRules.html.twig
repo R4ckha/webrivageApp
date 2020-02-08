@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product overview{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Product overview</h1>
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.startDate, {
+            'attr': {'placeholder': "Start date"},
+            'label': false
+        }) }}
+
+        {{ form_row(form.endDate, {
+            'attr': {'placeholder': "End date"},
+            'label': false
+        }) }}
+
+        {{ form_row(form.type, {
+            'attr': {'placeholder': "Type of product"},
+            'label': "type of product"
+        }) }}
+
+        {{ form_row(form.compare, {
+            'attr': {'placeholder': "if price is :"},
+            'label': "if price is :"
+        }) }}
+
+        {{ form_row(form.price, {
+            'attr': {'placeholder': "Price"},
+            'label': false
+        }) }}
+
+        {{ form_row(form.discountAmount, {
+            'attr': {'placeholder': "discount amout (between 1 and 50%)"},
+            'label': false
+        }) }}
+
+        <button type="submit" class="btn btn-primary">
+            Add rule
+        </button>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

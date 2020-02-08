@@ -18,6 +18,7 @@ class ProductsController extends AbstractController
     public function index(ProductsRepository $repo)
     {
         $products = $repo->findAll();
+        
         return $this->render('products/index.html.twig', [
             'products' => $products,
         ]);
@@ -39,7 +40,8 @@ class ProductsController extends AbstractController
             // Si l'article à déjà un ID alors c'est un ID déjà présent en BDD
             if (!$product->getId()) {
                 // make initial discounted price same as base price
-                $product->setDiscountedPrice($product->getPrice());
+                // discounted_price can be null, abort mission
+                // $product->setDiscountedPrice($product->getPrice());
             }
 
             $manager->persist($product);
