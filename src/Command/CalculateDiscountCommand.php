@@ -69,11 +69,15 @@ class CalculateDiscountCommand extends Command
         // Array to send every morning
         $emailArray = [];
         foreach ($productRepo as $product) {
+
             $discountPrice = number_format($engine->calculatePrice($product), 2, '.', '');
+
             if ($product->getPrice() != $discountPrice && $product->getDiscountedPrice() != $discountPrice) {
+
                 $product->setDiscountedPrice($discountPrice);
                 $manager->persist($product);
                 $manager->flush();
+
                 array_push($emailArray, [
                     "id"=>$product->getId(),
                     "name"=>$product->getName(),
@@ -83,7 +87,9 @@ class CalculateDiscountCommand extends Command
                 ]);
             }
         }
+
         if (!empty($emailArray)) {
+            
             $message = (new \Swift_Message('Hello Email'))
             ->setFrom('gratien.therond@gmail.com')
             ->setTo('gratien.therond@gmail.com')

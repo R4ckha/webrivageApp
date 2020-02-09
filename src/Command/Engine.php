@@ -10,9 +10,7 @@ class Engine
     private $discountRules = array();
 
     /**
-     * Crée un nouveau moteur de tarification.
-     *
-     * @param Language $language Notre language personnalisé
+     * @param Language $language custom language
      */
     public function __construct(Language $language)
     {
@@ -20,9 +18,9 @@ class Engine
     }
 
     /**
-     * Ajoute une règle de remise.
+     * Adding discount rule
      *
-     * @param string $expression L'expression de remise
+     * @param string $expression discount rule
      */
     public function addDiscountRule($expression)
     {
@@ -30,11 +28,11 @@ class Engine
     }
 
     /**
-     * Calcule le prix du produit.
+     * Calculating price product
      *
-     * @param Products $product Le produit
+     * @param Products $product the product
      *
-     * @return float Le prix
+     * @return float price
      */
     public function calculatePrice(Products $product)
     {

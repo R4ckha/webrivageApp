@@ -8,14 +8,14 @@ final class Language extends ExpressionLanguage
 {
     protected function registerFunctions()
     {
-        // Enregistrer notre fonction 'date'
+        // register 'date' function
         $this->register('date', function ($date) {
             return sprintf('(new \DateTime(%s))', $date);
         }, function (array $values, $date) {
             return new \DateTime($date);
         });
 
-        // Enregistrer notre fonction 'date_modify'
+        // register 'date_modify' function
         $this->register('date_modify', function ($date, $modify) {
             return sprintf('%s->modify(%s)', $date, $modify);
         }, function (array $values, $date, $modify) {

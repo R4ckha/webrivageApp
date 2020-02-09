@@ -11,9 +11,13 @@ use App\Repository\DiscountRulesRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RulesController extends AbstractController
@@ -40,8 +44,20 @@ class RulesController extends AbstractController
 
         $defaultData = [];
         $form = $this->createFormBuilder($defaultData)
-            ->add('startDate', TextType::class, ['required'   => false])
-            ->add('endDate', TextType::class, ['required'   => false])
+            ->add('startDate', DateType::class, [
+                'required'   => false,
+                'format' => 'yyyy-MM-dd',
+                'placeholder' => [
+                    'year' => 'Year', 'month' => 'Month', 'day' => 'Day',
+                ]
+            ])
+            ->add('endDate', DateType::class, [
+                'required'   => false,
+                'format' => 'yyyy-MM-dd',
+                'placeholder' => [
+                    'year' => 'Year', 'month' => 'Month', 'day' => 'Day',
+                ]
+            ])
             ->add('type', EntityType::class, [
                 'class' => Products::class,
                 'query_builder' => function (EntityRepository $er) {
@@ -59,8 +75,18 @@ class RulesController extends AbstractController
                     'Equal to' => "=",
                 ],
             ])
-            ->add('price', TextType::class)
-            ->add('discountAmount', TextType::class)
+            ->add('price', NumberType::class, [
+                'invalid_message' => "Price must be a valid number (like 100 or 100.56)",
+                'scale' => 2
+            ])
+            ->add('discountAmount', IntegerType::class, [
+                'invalid_message' => "Discount amount must be a valid number between 1 and 50",
+                'attr' => [
+                    'min' => 1,
+                    'max' => 50,
+                    'step' => 1
+                ]
+            ])
             ->getForm();
 
         $form->handleRequest($request);
@@ -68,7 +94,7 @@ class RulesController extends AbstractController
         if ( $form->isSubmitted() && $form->isValid() ) {
             
             $data = $form->getData();
-
+            
             $expression = "";
 
             if ($data["price"]) {
@@ -76,11 +102,11 @@ class RulesController extends AbstractController
             }
 
             if ($data["startDate"]) {
-                $expression .= " and date('now') >= date('{$data['startDate']}')";
+                $expression .= " and date('now') >= date('{$data['startDate']->format('Y-m-d')}')";
             }
 
             if ($data["endDate"]) {
-                $expression .= " and date('now') <= date('{$data['endDate']}')";
+                $expression .= " and date('now') <= date('{$data['endDate']->format('Y-m-d')}')";
             }
 
             if ($expression) {
