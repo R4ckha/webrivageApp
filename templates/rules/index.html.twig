@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RulesController!{% endblock %}
+{% block title %}Product overview{% endblock %}
 
 {% block body %}
 <style>
@@ -9,6 +9,25 @@
 </style>
 
 <div class="example-wrapper">
+    <h1>Product overview</h1>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Rule</th>
+                <th scope="col">Discount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in rules %}
+            <tr class="table-active">
+                <th scope="row">{{ rule.id }}</th>
+                <td>{{ rule.ruleExpression }}</td>
+                <td>{{ rule.discountPercent }} %</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table> 
     <a class="nav-link" href={{ path("add_rules") }}>Add rule</a>
 </div>
 {% endblock %}

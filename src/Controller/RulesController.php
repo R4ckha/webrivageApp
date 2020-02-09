@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Products;
+use App\Entity\DiscountRules;
 use Doctrine\ORM\EntityRepository;
 use App\Repository\ProductsRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DiscountRulesRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,28 +21,27 @@ class RulesController extends AbstractController
     /**
      * @Route("/rules", name="rules")
      */
-    public function index()
+    public function index(DiscountRulesRepository $ruleRepo)
     {
+        $rules = $ruleRepo->findAll();
+        
         return $this->render('rules/index.html.twig', [
-            'controller_name' => 'RulesController',
+            'rules' => $rules,
         ]);
     }
 
     /**
      * @Route("/rules/add", name="add_rules")
      */
-    public function rulesAdd(ProductsRepository $repo, Request $request, EntityManagerInterface $manager)
+    public function rulesAdd(Request $request, EntityManagerInterface $manager)
     {   
-
-        //$products = $repo->findAllType();
-        //$product = new Products();
-
-        //dd($product->getType());
         
-        $defaultData = ['message' => 'Type your message here'];
+        $rule = new DiscountRules();
+
+        $defaultData = [];
         $form = $this->createFormBuilder($defaultData)
-            ->add('startDate', TextType::class)
-            ->add('endDate', TextType::class)
+            ->add('startDate', TextType::class, ['required'   => false])
+            ->add('endDate', TextType::class, ['required'   => false])
             ->add('type', EntityType::class, [
                 'class' => Products::class,
                 'query_builder' => function (EntityRepository $er) {
@@ -52,7 +53,9 @@ class RulesController extends AbstractController
             ->add('compare', ChoiceType::class, [
                 'choices'  => [
                     'Higher than' => ">",
+                    'Higher than or equal' => ">=",
                     'Lower than' => "<",
+                    'Lower than or equal' => "<=",
                     'Equal to' => "=",
                 ],
             ])
@@ -63,21 +66,58 @@ class RulesController extends AbstractController
         $form->handleRequest($request);
 
         if ( $form->isSubmitted() && $form->isValid() ) {
-            // Si l'article à déjà un ID alors c'est un ID déjà présent en BDD
-            if (!$product->getId()) {
-                // make initial discounted price same as base price
-                // discounted_price can be null, abort mission
-                // $product->setDiscountedPrice($product->getPrice());
+            
+            $data = $form->getData();
+
+            $expression = "";
+
+            if ($data["price"]) {
+                $expression .= "product.price {$data["compare"]} {$data['price']}";
             }
 
-            $manager->persist($product);
+            if ($data["startDate"]) {
+                $expression .= " and date('now') >= date('{$data['startDate']}')";
+            }
+
+            if ($data["endDate"]) {
+                $expression .= " and date('now') <= date('{$data['endDate']}')";
+            }
+
+            if ($expression) {
+                $expression = "and {$expression}";
+            }
+
+            $discountAmount = $data["discountAmount"] / 100;
+            $type = strToLower(self::normalize($data['type']->getType()));
+
+            $expression = "product.type === '$type' {$expression} ? $discountAmount : 0";
+            
+            $rule->setRuleExpression($expression);
+            $rule->setDiscountPercent($data['discountAmount']);
+
+            $manager->persist($rule);
             $manager->flush();
 
-            return $this->redirectToRoute('products');
+            return $this->redirectToRoute('rules');
         }
 
         return $this->render('rules/newRules.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    private function normalize ($string) {
+        $table = array(
+            'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj', 'd'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'C'=>'C', 'c'=>'c', 'C'=>'C', 'c'=>'c',
+            'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+            'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+            'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+            'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+            'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+            'ÿ'=>'y', 'R'=>'R', 'r'=>'r', ' ' => '_',
+        );
+       
+        return strtr($string, $table);
     }
 }

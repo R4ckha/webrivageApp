@@ -19,22 +19,22 @@ class Products
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    public $name;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $price;
+    public $price;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $discounted_price;
+    public $discounted_price;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $type;
+    public $type;
 
     public function getId(): ?int
     {

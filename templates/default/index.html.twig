@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DefaultController!{% endblock %}
+{% block title %}Product overview{% endblock %}
 
 {% block body %}
 <style>
@@ -9,12 +9,10 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Welcome on board</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'E:/Documents/Programmation/webrivageApp/src/Controller/DefaultController.php'|file_link(0) }}">src/Controller/DefaultController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'E:/Documents/Programmation/webrivageApp/templates/default/index.html.twig'|file_link(0) }}">templates/default/index.html.twig</a></code></li>
-    </ul>
+    <p>You can see a list of your products here: <a class="nav-link" href={{ path("products") }}>See my products</a></p>
+    
+    <p>Or a list of your rules here: <a class="nav-link" href={{ path("rules") }}>See my rules</a></p>
 </div>
 {% endblock %}
